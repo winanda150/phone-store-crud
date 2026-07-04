@@ -89,13 +89,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </li>
           <li class="nav-header">TRANSAKSI</li>
           <li class="nav-item">
-            <a href="index.php" class="nav-link">
+            <a href="penjualan.php" class="nav-link">
               <i class="nav-icon far fa-calendar-alt"></i>
               <p>Penjualan</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="index.php" class="nav-link">
+            <a href="pembelian.php" class="nav-link">
               <i class="nav-icon far fa-image"></i>
               <p>Pembelian</p>
             </a>

@@ -16,6 +16,26 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/`db_toko` /*!40100 DEFAULT CHARACTER SET
 
 USE `db_toko`;
 
+/*Table structure for table `pembelian` */
+
+DROP TABLE IF EXISTS `pembelian`;
+
+CREATE TABLE `pembelian` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `no_transaksi` varchar(25) NOT NULL,
+  `tanggal` date NOT NULL,
+  `supplier` varchar(100) NOT NULL,
+  `barang` varchar(100) NOT NULL,
+  `jumlah_barang` int(11) NOT NULL,
+  `total` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+/*Data for the table `pembelian` */
+
+insert  into `pembelian`(`id`,`no_transaksi`,`tanggal`,`supplier`,`barang`,`jumlah_barang`,`total`) values 
+(1,'TRB-20260704-0001','2026-07-05','PT Erajaya Swasembada','Samsung Galaxy S24 Ultra',10,139990000);
+
 /*Table structure for table `penjualan` */
 
 DROP TABLE IF EXISTS `penjualan`;

@@ -17,6 +17,12 @@
   $data_penjualan = mysqli_fetch_assoc($query_penjualan);
   $total_penjualan = $data_penjualan['total_penjualan'] ?? 0;
   $total_omset = $data_penjualan['total_omset'] ?? 0;
+
+  // Hitung jumlah transaksi dan total biaya pembelian
+  $query_pembelian = mysqli_query($conn, "SELECT COUNT(id) as total_pembelian, SUM(total) as total_biaya FROM pembelian");
+  $data_pembelian = mysqli_fetch_assoc($query_pembelian);
+  $total_pembelian = $data_pembelian['total_pembelian'] ?? 0;
+  $total_biaya_pembelian = $data_pembelian['total_biaya'] ?? 0;
 ?>
 
 <!DOCTYPE html>
@@ -112,7 +118,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="pembelian.php" class="nav-link">
               <i class="nav-icon far fa-image"></i>
               <p>
                 Pembelian
@@ -157,7 +163,7 @@
     <section class="content">
       <div class="container-fluid">
         <!-- Small boxes (Stat box) -->
-        <div class="row">
+        <div class="row justify-content-center">
           <div class="col-lg-4 col-6">
             <!-- small box -->
             <div class="small-box bg-info">
@@ -197,6 +203,34 @@
                 <i class="ion ion-person-add"></i>
               </div>
               <a href="user.php" class="small-box-footer">Lihat Detail <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
+          <div class="col-lg-4 col-6">
+            <!-- small box -->
+            <div class="small-box bg-primary">
+              <div class="inner">
+                <h3><?= number_format($total_pembelian); ?></h3>
+                <p>Jumlah Transaksi Pembelian</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-ios-cart"></i>
+              </div>
+              <a href="pembelian.php" class="small-box-footer">Lihat Detail <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
+          <div class="col-lg-4 col-6">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3>Rp <?= number_format($total_biaya_pembelian, 0, ',', '.'); ?></h3>
+                <p>Total Biaya Pembelian</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-arrow-graph-down-right"></i>
+              </div>
+              <a href="pembelian.php" class="small-box-footer">Lihat Detail <i class="fas fa-arrow-circle-right"></i></a>
             </div>
           </div>
           <!-- ./col -->

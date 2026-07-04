@@ -14,11 +14,12 @@
   if (isset($_SESSION['success'])) { $success = $_SESSION['success']; unset($_SESSION['success']); }
 
   $tanggal_hari_ini = date('Y-m-d');
-  $prefix = 'TRJ-' . date('Ymd') . '-';
+  $prefix = 'TRB-' . date('Ymd') . '-'; // TRB untuk Transaksi Beli
 
-  // Query untuk mendapatkan no_transaksi terakhir hari ini (lebih aman)
-  $stmt_last_gen = $conn->prepare("SELECT no_transaksi FROM penjualan WHERE tanggal = ? ORDER BY id DESC LIMIT 1");
-  $stmt_last_gen->bind_param("s", $tanggal_hari_ini);
+  // Query untuk mendapatkan no_transaksi terakhir hari ini
+  $stmt_last_gen = $conn->prepare("SELECT no_transaksi FROM pembelian WHERE no_transaksi LIKE ? ORDER BY id DESC LIMIT 1");
+  $like_prefix = $prefix . '%';
+  $stmt_last_gen->bind_param("s", $like_prefix);
   $stmt_last_gen->execute();
   $result_last_gen = $stmt_last_gen->get_result();
 
@@ -33,50 +34,50 @@
   $stmt_last_gen->close();
   // --- Akhir Logika Generate No Transaksi ---
 
-  // Logika untuk menambah data penjualan
-  if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_penjualan'])) {
+  // Logika untuk menambah data pembelian
+  if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_pembelian'])) {
       $no_transaksi = mysqli_real_escape_string($conn, trim($_POST['no_transaksi']));
       $tanggal = mysqli_real_escape_string($conn, trim($_POST['tanggal']));
-      $customer = mysqli_real_escape_string($conn, trim($_POST['customer']));
+      $supplier = mysqli_real_escape_string($conn, trim($_POST['supplier']));
       $barang = mysqli_real_escape_string($conn, trim($_POST['barang']));
       $jumlah_barang = intval($_POST['jumlah_barang']);
       $total = mysqli_real_escape_string($conn, trim($_POST['total']));
       // Hapus karakter non-numerik dari total
       $total_numeric = preg_replace('/[^0-9]/', '', $total);
 
-      if ($no_transaksi === '' || $tanggal === '' || $customer === '' || $barang === '' || $jumlah_barang <= 0 || $total_numeric === '') {
+      if ($no_transaksi === '' || $tanggal === '' || $supplier === '' || $barang === '' || $jumlah_barang <= 0 || $total_numeric === '') {
           $error = 'Semua field harus diisi.';
       } else {
-          $stmt = $conn->prepare("INSERT INTO penjualan (no_transaksi, tanggal, customer, barang, jumlah_barang, total) VALUES (?, ?, ?, ?, ?, ?)");
-          $stmt->bind_param("ssssii", $no_transaksi, $tanggal, $customer, $barang, $jumlah_barang, $total_numeric);
+          $stmt = $conn->prepare("INSERT INTO pembelian (no_transaksi, tanggal, supplier, barang, jumlah_barang, total) VALUES (?, ?, ?, ?, ?, ?)");
+          $stmt->bind_param("ssssii", $no_transaksi, $tanggal, $supplier, $barang, $jumlah_barang, $total_numeric);
           if ($stmt->execute()) {
-              $_SESSION['success'] = 'Transaksi penjualan baru berhasil ditambahkan.';
+              $_SESSION['success'] = 'Transaksi pembelian baru berhasil ditambahkan.';
           } else {
               $_SESSION['error'] = 'Gagal menambahkan transaksi: ' . $stmt->error;
           }
           $stmt->close();
-          header("Location: penjualan.php");
+          header("Location: pembelian.php");
           exit();
       }
   }
 
-  // Logika untuk mengedit data penjualan
-  if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_penjualan'])) {
+  // Logika untuk mengedit data pembelian
+  if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_pembelian'])) {
       $id = intval($_POST['id']);
       $no_transaksi = mysqli_real_escape_string($conn, trim($_POST['no_transaksi']));
       $tanggal = mysqli_real_escape_string($conn, trim($_POST['tanggal']));
-      $customer = mysqli_real_escape_string($conn, trim($_POST['customer']));
+      $supplier = mysqli_real_escape_string($conn, trim($_POST['supplier']));
       $barang = mysqli_real_escape_string($conn, trim($_POST['barang']));
       $jumlah_barang = intval($_POST['jumlah_barang']);
       $total = mysqli_real_escape_string($conn, trim($_POST['total']));
       // Hapus karakter non-numerik dari total
       $total_numeric = preg_replace('/[^0-9]/', '', $total);
 
-      if ($no_transaksi === '' || $tanggal === '' || $customer === '' || $barang === '' || $jumlah_barang <= 0 || $total_numeric === '') {
+      if ($no_transaksi === '' || $tanggal === '' || $supplier === '' || $barang === '' || $jumlah_barang <= 0 || $total_numeric === '') {
           $error = 'Semua field harus diisi.';
       } else {
-          $stmt = $conn->prepare("UPDATE penjualan SET no_transaksi=?, tanggal=?, customer=?, barang=?, jumlah_barang=?, total=? WHERE id=?");
-          $stmt->bind_param("ssssiii", $no_transaksi, $tanggal, $customer, $barang, $jumlah_barang, $total_numeric, $id);
+          $stmt = $conn->prepare("UPDATE pembelian SET no_transaksi=?, tanggal=?, supplier=?, barang=?, jumlah_barang=?, total=? WHERE id=?");
+          $stmt->bind_param("ssssiii", $no_transaksi, $tanggal, $supplier, $barang, $jumlah_barang, $total_numeric, $id);
 
           if ($stmt->execute()) {
               $_SESSION['success'] = 'Transaksi berhasil diperbarui.';
@@ -84,12 +85,12 @@
               $_SESSION['error'] = 'Gagal mengubah transaksi: ' . $stmt->error;
           }
           $stmt->close();
-          header("Location: penjualan.php");
+          header("Location: pembelian.php");
           exit();
       }
   }
 
-  $data_penjualan = mysqli_query($conn, "SELECT * FROM penjualan ORDER BY tanggal DESC");
+  $data_pembelian = mysqli_query($conn, "SELECT * FROM pembelian ORDER BY tanggal DESC");
 ?>
 
 <!DOCTYPE html>
@@ -97,7 +98,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Project UAS | Penjualan</title>
+  <title>Project UAS | Pembelian</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -177,7 +178,7 @@
           </li>
           <li class="nav-header">TRANSAKSI</li>
           <li class="nav-item">
-            <a href="penjualan.php" class="nav-link active">
+            <a href="penjualan.php" class="nav-link">
               <i class="nav-icon far fa-calendar-alt"></i>
               <p>
                 Penjualan
@@ -185,7 +186,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="pembelian.php" class="nav-link">
+            <a href="pembelian.php" class="nav-link active">
               <i class="nav-icon far fa-image"></i>
               <p>
                 Pembelian
@@ -214,12 +215,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Data Penjualan</h1>
+            <h1>Data Pembelian</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="dashboard.php">Home</a></li>
-              <li class="breadcrumb-item active">Penjualan</li>
+              <li class="breadcrumb-item active">Pembelian</li>
             </ol>
           </div>
         </div>
@@ -232,12 +233,12 @@
         <div class="col-12">
           <div class="card">
             <div class="card-header">
-              <h3 class="card-title">Daftar Transaksi Penjualan</h3>
+              <h3 class="card-title">Daftar Transaksi Pembelian</h3>
             </div>
             <!-- /.card-header -->
             <div class="card-body">
-                <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#addPenjualanModal">
-                    <i class="fas fa-plus"></i> Tambah Penjualan
+                <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#addPembelianModal">
+                    <i class="fas fa-plus"></i> Tambah Pembelian
                 </button>
 
                 <?php if ($error !== ''): ?>
@@ -263,7 +264,7 @@
                             <th>No</th>
                             <th>No. Transaksi</th>
                             <th>Tanggal</th>
-                            <th>Customer</th>
+                            <th>Supplier</th>
                             <th>Barang</th>
                             <th>Total</th>
                             <th>Aksi</th>
@@ -272,27 +273,27 @@
                     <tbody>
                         <?php
                           $no = 1;
-                          while($row = mysqli_fetch_assoc($data_penjualan)):
+                          while($row = mysqli_fetch_assoc($data_pembelian)):
                         ?>
                         <tr>
                             <td><?= $no++; ?></td>
                             <td><?= htmlspecialchars($row['no_transaksi']); ?></td>
                             <td><?= htmlspecialchars(date('d-m-Y', strtotime($row['tanggal']))); ?></td>
-                            <td><?= htmlspecialchars($row['customer']); ?></td>
+                            <td><?= htmlspecialchars($row['supplier']); ?></td>
                             <td><?= htmlspecialchars($row['barang']); ?> (<?= htmlspecialchars($row['jumlah_barang']); ?>x)</td>
                             <td>Rp <?= htmlspecialchars(number_format($row['total'], 0, ',', '.')); ?></td>
                             <td>
-                                <button type="button" class="btn btn-warning btn-sm edit-penjualan-button" data-toggle="modal" data-target="#editPenjualanModal"
+                                <button type="button" class="btn btn-warning btn-sm edit-pembelian-button" data-toggle="modal" data-target="#editPembelianModal"
                                     data-id="<?= $row['id']; ?>"
                                     data-no_transaksi="<?= htmlspecialchars($row['no_transaksi'], ENT_QUOTES); ?>"
                                     data-tanggal="<?= $row['tanggal']; ?>"
-                                    data-customer="<?= htmlspecialchars($row['customer'], ENT_QUOTES); ?>"
+                                    data-supplier="<?= htmlspecialchars($row['supplier'], ENT_QUOTES); ?>"
                                     data-barang="<?= htmlspecialchars($row['barang'], ENT_QUOTES); ?>"
                                     data-jumlah_barang="<?= htmlspecialchars($row['jumlah_barang'], ENT_QUOTES); ?>"
                                     data-total="<?= htmlspecialchars($row['total'], ENT_QUOTES); ?>">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button type="button" class="btn btn-danger btn-sm delete-penjualan-button" data-toggle="modal" data-target="#deletePenjualanModal" data-id="<?= $row['id']; ?>">
+                                <button type="button" class="btn btn-danger btn-sm delete-pembelian-button" data-toggle="modal" data-target="#deletePembelianModal" data-id="<?= $row['id']; ?>">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </td>
@@ -328,19 +329,19 @@
 </div>
 <!-- ./wrapper -->
 
-<!-- Modal Tambah Penjualan -->
-<div class="modal fade" id="addPenjualanModal" tabindex="-1" role="dialog" aria-labelledby="addPenjualanModalLabel" aria-hidden="true">
+<!-- Modal Tambah Pembelian -->
+<div class="modal fade" id="addPembelianModal" tabindex="-1" role="dialog" aria-labelledby="addPembelianModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <form method="POST" action="">
         <div class="modal-header">
-          <h5 class="modal-title" id="addPenjualanModalLabel">Tambah Penjualan</h5>
+          <h5 class="modal-title" id="addPembelianModalLabel">Tambah Pembelian</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          <input type="hidden" name="add_penjualan" value="1">
+          <input type="hidden" name="add_pembelian" value="1">
           <div class="form-group">
             <label for="addNoTransaksi">No. Transaksi</label>
             <input type="text" name="no_transaksi" id="addNoTransaksi" class="form-control" value="<?= htmlspecialchars($no_transaksi_otomatis); ?>" readonly required>
@@ -350,8 +351,8 @@
             <input type="date" name="tanggal" id="addTanggal" class="form-control" value="<?= date('Y-m-d'); ?>" required>
           </div>
           <div class="form-group">
-            <label for="addCustomer">Customer</label>
-            <input type="text" name="customer" id="addCustomer" class="form-control" placeholder="Nama customer" required>
+            <label for="addSupplier">Supplier</label>
+            <input type="text" name="supplier" id="addSupplier" class="form-control" placeholder="Nama supplier" required>
           </div>
           <div class="form-group">
             <label for="addBarang">Barang</label>
@@ -375,19 +376,19 @@
   </div>
 </div>
 
-<!-- Modal Edit Penjualan -->
-<div class="modal fade" id="editPenjualanModal" tabindex="-1" role="dialog" aria-labelledby="editPenjualanModalLabel" aria-hidden="true">
+<!-- Modal Edit Pembelian -->
+<div class="modal fade" id="editPembelianModal" tabindex="-1" role="dialog" aria-labelledby="editPembelianModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <form method="POST" action="">
         <div class="modal-header">
-          <h5 class="modal-title" id="editPenjualanModalLabel">Edit Penjualan</h5>
+          <h5 class="modal-title" id="editPembelianModalLabel">Edit Pembelian</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          <input type="hidden" name="edit_penjualan" value="1">
+          <input type="hidden" name="edit_pembelian" value="1">
           <input type="hidden" name="id" id="editId">
           <div class="form-group">
             <label for="editNoTransaksi">No. Transaksi</label>
@@ -398,8 +399,8 @@
             <input type="date" name="tanggal" id="editTanggal" class="form-control" required>
           </div>
           <div class="form-group">
-            <label for="editCustomer">Customer</label>
-            <input type="text" name="customer" id="editCustomer" class="form-control" required>
+            <label for="editSupplier">Supplier</label>
+            <input type="text" name="supplier" id="editSupplier" class="form-control" required>
           </div>
           <div class="form-group">
             <label for="editBarang">Barang</label>
@@ -423,12 +424,12 @@
   </div>
 </div>
 
-<!-- Modal Hapus Penjualan -->
-<div class="modal fade" id="deletePenjualanModal" tabindex="-1" role="dialog" aria-labelledby="deletePenjualanModalLabel" aria-hidden="true">
+<!-- Modal Hapus Pembelian -->
+<div class="modal fade" id="deletePembelianModal" tabindex="-1" role="dialog" aria-labelledby="deletePembelianModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="deletePenjualanModalLabel">Konfirmasi Hapus</h5>
+        <h5 class="modal-title" id="deletePembelianModalLabel">Konfirmasi Hapus</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -484,14 +485,13 @@
     $("#example1").DataTable();
 
     // Script untuk mengisi modal edit
-    $('.edit-penjualan-button').on('click', function () {
+    $('.edit-pembelian-button').on('click', function () {
       var button = $(this);
       $('#editId').val(button.data('id'));
       $('#editNoTransaksi').val(button.data('no_transaksi'));
-      // Ambil tanggal dari data attribute dan pastikan formatnya YYYY-MM-DD
       var tanggal = button.data('tanggal');
       $('#editTanggal').val(tanggal);
-      $('#editCustomer').val(button.data('customer'));
+      $('#editSupplier').val(button.data('supplier'));
       $('#editBarang').val(button.data('barang'));
       $('#editJumlahBarang').val(button.data('jumlah_barang'));
       var totalValue = button.data('total').toString();
@@ -499,9 +499,9 @@
     });
 
     // Script untuk mengatur link hapus
-    $('#deletePenjualanModal').on('show.bs.modal', function (event) {
+    $('#deletePembelianModal').on('show.bs.modal', function (event) {
       var button = $(event.relatedTarget);
-      $('#confirmDeleteButton').attr('href', 'hapus_penjualan.php?id=' + button.data('id'));
+      $('#confirmDeleteButton').attr('href', 'hapus_pembelian.php?id=' + button.data('id'));
     });
 
     // Fungsi untuk format Rupiah

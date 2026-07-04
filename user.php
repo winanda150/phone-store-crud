@@ -141,7 +141,7 @@ $data = mysqli_query($conn, "SELECT * FROM user");
             </a>
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="pembelian.php" class="nav-link">
               <i class="nav-icon far fa-image"></i>
               <p>
                 Pembelian
