@@ -410,6 +410,12 @@
       options: {
         maintainAspectRatio: false,
         responsive: true,
+        animations: {
+          y: {
+            duration: 800,
+            easing: 'easeInOutQuad'
+          }
+        },
         plugins: {
           legend: {
             display: true
@@ -441,7 +447,7 @@
       labels: [ 'Biaya Pembelian', 'Keuntungan' ],
       datasets: [ {
           data: [<?= $total_biaya_pembelian ?>, <?= $keuntungan ?>],
-          backgroundColor: ['#dc3545', '#28a745'], // bg-danger, bg-success
+          backgroundColor: ['#dc3545', '#6f42c1'], // bg-danger, bg-purple
       }]
     }
     var profitChart = new Chart(profitChartCanvas, {
