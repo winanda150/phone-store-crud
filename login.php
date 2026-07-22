@@ -7,17 +7,25 @@
   if(isset($_POST['login'])){
     $username=$_POST['username'];
     $password=$_POST['password'];
-    
-    // cek ke database
-    $query  = "select * from user where username='$username' 
-    and `password`='$password';";
-    $result = mysqli_query($conn, $query);
 
-    if(mysqli_num_rows($result) === 1) {
-      $_SESSION['login'] = true;
-      header ("Location: dashboard.php"); //untuk masuk ke dashboard
-    }else{
-      $error="Username dan password SALAH atau tidak ditemukan";
+    // Menggunakan prepared statement untuk keamanan
+    $stmt = $conn->prepare("SELECT * FROM user WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if($result->num_rows === 1) {
+      $user = $result->fetch_assoc();
+      // Di aplikasi production, gunakan password_verify()
+      // if (password_verify($password, $user['password'])) {
+      // Untuk saat ini, kita samakan dengan logika lama
+      if ($password === $user['password']) {
+        $_SESSION['login'] = true;
+        $_SESSION['nama_lengkap'] = $user['nama_lengkap'];
+        header ("Location: dashboard.php"); //untuk masuk ke dashboard
+      } else {
+        $error="Username dan password SALAH atau tidak ditemukan";
+      }
     }
   }
 ?>

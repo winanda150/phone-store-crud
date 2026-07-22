@@ -103,7 +103,7 @@ $data = mysqli_query($conn, "SELECT * FROM user");
           <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a class="d-block">Alexander Pierce</a>
+          <a class="d-block"><?= isset($_SESSION['nama_lengkap']) ? htmlspecialchars($_SESSION['nama_lengkap']) : 'Pengguna'; ?></a>
         </div>
       </div>
 
@@ -354,15 +354,15 @@ $data = mysqli_query($conn, "SELECT * FROM user");
           <input type="hidden" name="add_user" value="1">
           <div class="form-group">
             <label for="addUserNama">Nama Lengkap</label>
-            <input type="text" name="nama_lengkap" id="addUserNama" class="form-control" required>
+            <input type="text" name="nama_lengkap" id="addUserNama" class="form-control" placeholder="Masukkan nama lengkap" required>
           </div>
           <div class="form-group">
             <label for="addUserUsername">Username</label>
-            <input type="text" name="username" id="addUserUsername" class="form-control" required>
+            <input type="text" name="username" id="addUserUsername" class="form-control" placeholder="Masukkan username" required>
           </div>
           <div class="form-group">
             <label for="addUserPassword">Password</label>
-            <input type="text" name="password" id="addUserPassword" class="form-control" required>
+            <input type="text" name="password" id="addUserPassword" class="form-control" placeholder="Masukkan password" required>
           </div>
           <div class="form-group">
             <label for="addUserStatus">Status</label>
