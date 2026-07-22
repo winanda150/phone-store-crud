@@ -1,80 +1,138 @@
-/*
-SQLyog Community v13.3.1 (64 bit)
-MySQL - 10.4.32-MariaDB : Database - db_toko
-*********************************************************************
-*/
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Waktu pembuatan: 22 Jul 2026 pada 12.43
+-- Versi server: 10.4.32-MariaDB
+-- Versi PHP: 8.2.12
 
-/*!40101 SET NAMES utf8 */;
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
 
-/*!40101 SET SQL_MODE=''*/;
 
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-CREATE DATABASE /*!32312 IF NOT EXISTS*/`db_toko` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */;
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
-USE `db_toko`;
+--
+-- Database: `db_toko`
+--
 
-/*Table structure for table `pembelian` */
+-- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `pembelian`;
+--
+-- Struktur dari tabel `pembelian`
+--
 
 CREATE TABLE `pembelian` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `no_transaksi` varchar(25) NOT NULL,
   `tanggal` date NOT NULL,
   `supplier` varchar(100) NOT NULL,
   `barang` varchar(100) NOT NULL,
   `jumlah_barang` int(11) NOT NULL,
-  `total` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `total` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-/*Data for the table `pembelian` */
+--
+-- Dumping data untuk tabel `pembelian`
+--
 
-insert  into `pembelian`(`id`,`no_transaksi`,`tanggal`,`supplier`,`barang`,`jumlah_barang`,`total`) values 
-(1,'TRB-20260704-0001','2026-07-04','PT Erajaya Swasembada','Samsung Galaxy S24 Ultra',5,69995000);
+INSERT INTO `pembelian` (`id`, `no_transaksi`, `tanggal`, `supplier`, `barang`, `jumlah_barang`, `total`) VALUES
+(1, 'TRB-20260704-0001', '2026-07-04', 'PT Erajaya Swasembada', 'Samsung Galaxy S24 Ultra', 5, 69995000);
 
-/*Table structure for table `penjualan` */
+-- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `penjualan`;
+--
+-- Struktur dari tabel `penjualan`
+--
 
 CREATE TABLE `penjualan` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `no_transaksi` varchar(50) DEFAULT NULL,
   `tanggal` date DEFAULT NULL,
   `customer` varchar(255) DEFAULT NULL,
   `barang` varchar(255) DEFAULT NULL,
   `jumlah_barang` int(11) NOT NULL DEFAULT 1,
-  `total` decimal(15,2) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `total` decimal(15,2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-/*Data for the table `penjualan` */
+--
+-- Dumping data untuk tabel `penjualan`
+--
 
-insert  into `penjualan`(`id`,`no_transaksi`,`tanggal`,`customer`,`barang`,`jumlah_barang`,`total`) values 
-(1,'TRJ-20260704-0001','2026-07-04','I Wayan Winanda','Iphone 17 Pro Max',3,79497000.00);
+INSERT INTO `penjualan` (`id`, `no_transaksi`, `tanggal`, `customer`, `barang`, `jumlah_barang`, `total`) VALUES
+(1, 'TRJ-20260704-0001', '2026-07-04', 'I Wayan Winanda', 'Iphone 17 Pro Max', 3, 79497000.00);
 
-/*Table structure for table `user` */
+-- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `user`;
+--
+-- Struktur dari tabel `user`
+--
 
 CREATE TABLE `user` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `nama_lengkap` varchar(50) DEFAULT NULL,
   `username` varchar(50) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
-  `status` tinyint(1) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `status` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-/*Data for the table `user` */
+--
+-- Dumping data untuk tabel `user`
+--
 
-insert  into `user`(`id`,`nama_lengkap`,`username`,`password`,`status`) values 
-(1,'I Wayan Winanda','Winanda','$2y$10$9TlyAzVdTeuo9/h/ljLF0uZOIp1L9fpIhYcaibvpjqe9XObQP6djC',1);
+INSERT INTO `user` (`id`, `nama_lengkap`, `username`, `password`, `status`) VALUES
+(1, 'I Wayan Winanda', 'Winanda', '$2y$10$9TlyAzVdTeuo9/h/ljLF0uZOIp1L9fpIhYcaibvpjqe9XObQP6djC', NULL);
 
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indeks untuk tabel `pembelian`
+--
+ALTER TABLE `pembelian`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indeks untuk tabel `penjualan`
+--
+ALTER TABLE `penjualan`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indeks untuk tabel `user`
+--
+ALTER TABLE `user`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT untuk tabel yang dibuang
+--
+
+--
+-- AUTO_INCREMENT untuk tabel `pembelian`
+--
+ALTER TABLE `pembelian`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT untuk tabel `penjualan`
+--
+ALTER TABLE `penjualan`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT untuk tabel `user`
+--
+ALTER TABLE `user`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

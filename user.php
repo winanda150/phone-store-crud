@@ -1,6 +1,6 @@
 <?php
-session_start();
-include 'koneksi.php';
+
+include 'session_check.php'; // Ganti blok session lama dengan ini
 
 $error = isset($_SESSION['error']) ? $_SESSION['error'] : '';
 $success = isset($_SESSION['success']) ? $_SESSION['success'] : '';
@@ -25,10 +25,9 @@ if (isset($_GET['hapus_id'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nama_lengkap = mysqli_real_escape_string($conn, trim($_POST['nama_lengkap']));
-    $username = mysqli_real_escape_string($conn, trim($_POST['username']));
-    $password = mysqli_real_escape_string($conn, trim($_POST['password']));
-    $status = isset($_POST['status']) ? intval($_POST['status']) : 0; // Mengubah status menjadi integer (1 atau 0)
+    $nama_lengkap = trim($_POST['nama_lengkap']);
+    $username = trim($_POST['username']);
+    $password = trim($_POST['password']);
 
     if (isset($_POST['edit_user'])) {
         $id = intval($_POST['id']);
@@ -38,12 +37,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!empty($password)) {
                 // Jika password diisi, hash password baru
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-                $stmt = $conn->prepare("UPDATE user SET nama_lengkap=?, username=?, password=?, status=? WHERE id=?");
-                $stmt->bind_param("sssii", $nama_lengkap, $username, $hashed_password, $status, $id);
+                $stmt = $conn->prepare("UPDATE user SET nama_lengkap=?, username=?, password=? WHERE id=?");
+                $stmt->bind_param("sssi", $nama_lengkap, $username, $hashed_password, $id);
             } else {
                 // Jika password tidak diisi, jangan update password
-                $stmt = $conn->prepare("UPDATE user SET nama_lengkap=?, username=?, status=? WHERE id=?");
-                $stmt->bind_param("ssii", $nama_lengkap, $username, $status, $id);
+                $stmt = $conn->prepare("UPDATE user SET nama_lengkap=?, username=? WHERE id=?");
+                $stmt->bind_param("ssi", $nama_lengkap, $username, $id);
             }
 
             if ($stmt->execute()) {
@@ -60,9 +59,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['error'] = 'Semua field harus diisi.';
         } else {
             // Hash password sebelum disimpan
-            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $conn->prepare("INSERT INTO user (nama_lengkap, username, password, status) VALUES (?, ?, ?, ?)");
-            $stmt->bind_param("sssi", $nama_lengkap, $username, $hashed_password, $status);
+            $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+            $stmt = $conn->prepare("INSERT INTO user (nama_lengkap, username, password) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss", $nama_lengkap, $username, $hashed_password);
 
             if ($stmt->execute()) {
                 $_SESSION['success'] = 'User baru berhasil ditambahkan.';
@@ -76,7 +75,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$data = mysqli_query($conn, "SELECT * FROM user");
+// Ambil data user beserta status online/offline
+// Pengguna dianggap online jika aktivitas terakhirnya dalam 5 menit terakhir
+$query = "
+    SELECT id, nama_lengkap, username, status,
+           (CASE WHEN status > (NOW() - INTERVAL 5 MINUTE) THEN 1 ELSE 0 END) as is_online
+    FROM user
+";
+$data = mysqli_query($conn, $query);
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -100,6 +107,35 @@ $data = mysqli_query($conn, "SELECT * FROM user");
   <style>
     .nav-sidebar .nav-header:not(:first-of-type) {
       padding: 1rem 1rem 0.5rem;
+    }
+    /* Penyesuaian layout DataTables untuk mobile */
+    @media (max-width: 767px) {
+      .dataTables_wrapper .row:first-child { /* Target baris yg berisi search dan show entries */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        flex-wrap: nowrap; /* Mencegah elemen wrap ke baris baru */
+      }
+      .dataTables_wrapper .row:first-child .col-sm-12 {
+        flex: 0 1 auto; /* Izinkan elemen untuk menyusut tapi tidak tumbuh, basisnya auto */
+        width: auto; /* Override lebar default */
+        max-width: none; /* Hapus batasan lebar maksimal */
+        text-align: left; /* Pastikan teks rata kiri */
+      }
+      /* Target baris bawah (info dan pagination) */
+      .dataTables_wrapper .row:nth-child(3) {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: nowrap;
+      }
+      .dataTables_wrapper .row:nth-child(3) .col-sm-12 {
+        flex: 0 1 auto;
+        width: auto;
+        max-width: none;
+        padding: 0.5rem; /* Beri sedikit jarak */
+      }
     }
   </style>
 </head>
@@ -275,7 +311,13 @@ $data = mysqli_query($conn, "SELECT * FROM user");
                               <td><?= $row['nama_lengkap']; ?></td>
                               <td><?= $row['username']; ?></td>
                               <td>********</td>
-                              <td><span class="badge badge-<?= $row['status'] == 1 ? 'success' : 'danger'; ?>"><?= $row['status'] == 1 ? 'Aktif' : 'Tidak Aktif'; ?></span></td>
+                              <td>
+                                <?php if ($row['is_online'] == 1): ?>
+                                  <span class="badge badge-success">Aktif</span>
+                                <?php else: ?>
+                                  <span class="badge badge-danger">Tidak Aktif</span>
+                                <?php endif; ?>
+                              </td>
 
                               <td>
                                   <button type="button"
@@ -284,8 +326,8 @@ $data = mysqli_query($conn, "SELECT * FROM user");
                                     data-target="#editUserModal"
                                     data-id="<?= $row['id']; ?>"
                                     data-nama="<?= htmlspecialchars($row['nama_lengkap'], ENT_QUOTES); ?>"
-                                    data-username="<?= htmlspecialchars($row['username'], ENT_QUOTES); ?>"                                    
-                                    data-status="<?= htmlspecialchars($row['status'], ENT_QUOTES); ?>">
+                                    data-username="<?= htmlspecialchars($row['username'], ENT_QUOTES); ?>"
+                                    >
                                       <i class="fas fa-edit"></i>
                                   </button>
 
@@ -362,7 +404,6 @@ $data = mysqli_query($conn, "SELECT * FROM user");
       $('#editUserNama').val(button.data('nama'));
       $('#editUserUsername').val(button.data('username'));      
       $('#editUserPassword').attr('placeholder', 'Kosongkan jika tidak ingin diubah');
-      $('#editUserStatus').val(button.data('status')); // Set value 1 atau 0
     });
 
     $('#deleteUserModal').on('show.bs.modal', function (event) {
@@ -394,14 +435,7 @@ $data = mysqli_query($conn, "SELECT * FROM user");
           </div>
           <div class="form-group">
             <label for="addUserPassword">Password</label>
-            <input type="text" name="password" id="addUserPassword" class="form-control" placeholder="Masukkan password" required>
-          </div>
-          <div class="form-group">
-            <label for="addUserStatus">Status</label>
-            <select name="status" id="addUserStatus" class="form-control" required>
-              <option value="1">Aktif</option>
-              <option value="0">Tidak Aktif</option>
-            </select>
+            <input type="password" name="password" id="addUserPassword" class="form-control" placeholder="Masukkan password" required>
           </div>
         </div>
         <div class="modal-footer justify-content-between">
@@ -436,14 +470,7 @@ $data = mysqli_query($conn, "SELECT * FROM user");
           </div>
           <div class="form-group">
             <label for="editUserPassword">Password</label>
-            <input type="text" name="password" id="editUserPassword" class="form-control" placeholder="Kosongkan jika tidak ingin diubah">
-          </div>
-          <div class="form-group">
-            <label for="editUserStatus">Status</label>
-            <select name="status" id="editUserStatus" class="form-control" required>
-              <option value="1">Aktif</option>
-              <option value="0">Tidak Aktif</option>
-            </select>
+            <input type="password" name="password" id="editUserPassword" class="form-control" placeholder="Kosongkan jika tidak ingin diubah">
           </div>
         </div>
         <div class="modal-footer justify-content-between">

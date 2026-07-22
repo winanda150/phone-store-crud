@@ -106,6 +106,16 @@
     .nav-sidebar .nav-header:not(:first-of-type) {
       padding: 1rem 1rem 0.5rem;
     }
+    /* Custom style untuk memperbesar font di mobile */
+    @media (max-width: 767px) {
+      .small-box h3 {
+        font-size: 2.3rem;
+      }
+
+      .small-box p {
+        font-size: 1rem;
+      }
+    }
   </style>
 </head>
 <body class="hold-transition sidebar-mini">

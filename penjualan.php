@@ -129,6 +129,35 @@
     .nav-sidebar .nav-header:not(:first-of-type) {
       padding: 1rem 1rem 0.5rem;
     }
+    /* Penyesuaian layout DataTables untuk mobile */
+    @media (max-width: 767px) {
+      .dataTables_wrapper .row:first-child { /* Target baris yg berisi search dan show entries */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        flex-wrap: nowrap; /* Mencegah elemen wrap ke baris baru */
+      }
+      .dataTables_wrapper .row:first-child .col-sm-12 {
+        flex: 0 1 auto; /* Izinkan elemen untuk menyusut tapi tidak tumbuh, basisnya auto */
+        width: auto; /* Override lebar default */
+        max-width: none; /* Hapus batasan lebar maksimal */
+        text-align: left; /* Pastikan teks rata kiri */
+      }
+      /* Target baris bawah (info dan pagination) */
+      .dataTables_wrapper .row:nth-child(3) {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: nowrap;
+      }
+      .dataTables_wrapper .row:nth-child(3) .col-sm-12 {
+        flex: 0 1 auto;
+        width: auto;
+        max-width: none;
+        padding: 0.5rem; /* Beri sedikit jarak */
+      }
+    }
   </style>
 </head>
 <body class="hold-transition sidebar-mini">
