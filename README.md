@@ -1,4 +1,4 @@
-# 📱 Phone Store CRUD - Create, Read, Update, dan Delete
+## 📱 Phone Store CRUD - Create, Read, Update, dan Delete
 
 ![Phone Store CRUD Dashboard](docs/assets/img/Screenshot%20(198).png)
 

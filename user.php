@@ -66,10 +66,15 @@ $data = mysqli_query($conn, "SELECT * FROM user");
   <link rel="stylesheet" href="dist/css/adminlte.min.css">
   <!-- Google Font: Source Sans Pro -->
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+  <style>
+    .nav-sidebar .nav-header:not(:first-of-type) {
+      padding: 1rem 1rem 0.5rem;
+    }
+  </style>
 </head>
 <body class="hold-transition sidebar-mini">
-<div class="wrapper">
   <!-- Navbar -->
+<div class="wrapper">
   <nav class="main-header navbar navbar-expand navbar-white navbar-light">
     <!-- Left navbar links -->
     <ul class="navbar-nav">
@@ -184,8 +189,9 @@ $data = mysqli_query($conn, "SELECT * FROM user");
 
     <!-- Main content -->
     <section class="content">
-      <div class="row">
-        <div class="col-12">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">Daftar User</h3>
@@ -268,11 +274,12 @@ $data = mysqli_query($conn, "SELECT * FROM user");
             </div>
             <!-- /.card-body -->
           </div>
-          <!-- /.card -->
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
         </div>
-        <!-- /.col -->
-      </div>
-      <!-- /.row -->
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
     </section>
     <!-- /.content -->
   </div>

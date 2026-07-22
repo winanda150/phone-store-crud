@@ -54,11 +54,14 @@
     .card-title-print {
       display: none;
     }
+    .nav-sidebar .nav-header:not(:first-of-type) {
+      padding: 1rem 1rem 0.5rem;
+    }
   </style>
 </head>
 <body class="hold-transition sidebar-mini">
-<div class="wrapper">
-  <nav class="main-header navbar navbar-expand navbar-white navbar-light no-print">
+<div class="wrapper"> <!-- Wrapper dipindahkan ke sini -->
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light no-print"> <!-- Wrapper dihapus dari sini -->
     <ul class="navbar-nav">
       <li class="nav-item">
         <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
@@ -135,7 +138,7 @@
     </div>
   </aside>
 
-  <div class="content-wrapper">
+  <div class="content-wrapper"> <!-- Pembungkus ini yang hilang -->
     <section class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
@@ -153,8 +156,9 @@
     </section>
 
     <section class="content">
-      <div class="row">
-        <div class="col-12">
+      <div class="container-fluid"> <!-- Container-fluid ini sudah benar -->
+        <div class="row">
+          <div class="col-12">
           <div class="card">
             <div class="card-header no-print">
               <h3 class="card-title">Filter Laporan</h3>
@@ -222,8 +226,9 @@
             </div>
           </div>
         </div>
-      </div>
-    </section>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section> <!-- /.content -->
   </div>
 
   <footer class="main-footer no-print">
