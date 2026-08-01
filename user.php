@@ -1,6 +1,7 @@
 <?php
+  include 'session_check.php'; // Ganti blok session lama dengan ini
 
-include 'session_check.php'; // Ganti blok session lama dengan ini
+  include 'koneksi.php';
 
 $error = isset($_SESSION['error']) ? $_SESSION['error'] : '';
 $success = isset($_SESSION['success']) ? $_SESSION['success'] : '';

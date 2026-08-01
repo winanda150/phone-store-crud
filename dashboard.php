@@ -37,7 +37,14 @@
   $keuntungan = $total_omset - $total_biaya_pembelian;
 
   // Data untuk Chart Penjualan dan Pembelian Bulanan
-  $tahun_sekarang = date('Y');
+  // Ambil tahun dari transaksi terakhir sebagai default, jika tidak ada, gunakan tahun sekarang
+  $stmt_year = $conn->prepare("SELECT YEAR(MAX(tanggal)) as last_year FROM (SELECT tanggal FROM penjualan UNION ALL SELECT tanggal FROM pembelian) as t");
+  $stmt_year->execute();
+  $result_year = $stmt_year->get_result()->fetch_assoc();
+  $stmt_year->close();
+
+  $tahun_sekarang = $result_year['last_year'] ?? date('Y');
+
   // Data Penjualan
   $query_chart_penjualan = "
       SELECT 

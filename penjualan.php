@@ -103,7 +103,9 @@
       }
   }
 
-  $data_penjualan = mysqli_query($conn, "SELECT * FROM penjualan ORDER BY tanggal DESC");
+  $stmt_data = $conn->prepare("SELECT * FROM penjualan ORDER BY tanggal DESC");
+  $stmt_data->execute();
+  $data_penjualan = $stmt_data->get_result();
 ?>
 
 <!DOCTYPE html>
@@ -322,7 +324,7 @@
                     <tbody>
                         <?php
                           $no = 1;
-                          while($row = mysqli_fetch_assoc($data_penjualan)):
+                          while($row = $data_penjualan->fetch_assoc()):
                         ?>
                         <tr>
                             <td><?= $no++; ?></td>

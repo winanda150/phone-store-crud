@@ -8,8 +8,15 @@
 
   include 'koneksi.php';
 
-  $start_date = date('Y-m-01');
-  $end_date = date('Y-m-t');
+  // Ambil tanggal transaksi pertama dan terakhir sebagai default
+  $stmt_dates = $conn->prepare("SELECT MIN(tanggal) as min_date, MAX(tanggal) as max_date FROM penjualan");
+  $stmt_dates->execute();
+  $result_dates = $stmt_dates->get_result()->fetch_assoc();
+  $stmt_dates->close();
+
+  // Jika ada data, gunakan tanggal min/max. Jika tidak, gunakan bulan ini.
+  $start_date = $result_dates['min_date'] ?? date('Y-m-01');
+  $end_date = $result_dates['max_date'] ?? date('Y-m-t');
 
   if(isset($_GET['start_date']) && isset($_GET['end_date']) && !empty($_GET['start_date']) && !empty($_GET['end_date'])){
     $start_date = $_GET['start_date'];
@@ -69,9 +76,9 @@
     </ul>
     <ul class="navbar-nav ml-auto">
       <li>
-        <a href="logout.php" class="btn btn-danger btn-sm">
+        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#logoutModal">
           <i class="fas fa-sign-out-alt mr-1"></i>Log out
-        </a>
+        </button>
       </li>
     </ul>
   </nav>
@@ -237,6 +244,27 @@
     <div class="float-right d-none d-sm-block"><b>Version</b> 3.0.0</div>
     <strong>Copyright &copy; 2014-2019 <a href="http://adminlte.io">AdminLTE.io</a>.</strong> All rights reserved.
   </footer>
+</div>
+
+<!-- Modal Logout -->
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="logoutModalLabel">Konfirmasi Log Out</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Apakah Anda yakin ingin keluar?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+        <a href="logout.php" class="btn btn-danger">Log Out</a>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script src="plugins/jquery/jquery.min.js"></script>
