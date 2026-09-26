@@ -93,7 +93,7 @@ Sistem dibangun menggunakan paradigma **Monolithic MVC-lite** dengan PHP Native 
 
 ```mermaid
 graph TD
-    Client([💻 User Browser]) -->|HTTP Request| Router{index.php / Session Guard}
+    Client([💻 User Browser]) -->|HTTPS Request| Router{index.php / Session Guard}
     Router -->|Belum Login| Login[login.php]
     Router -->|Terautentikasi| Dashboard[dashboard.php]
     
@@ -268,7 +268,7 @@ cd phone-store-crud
 
 ### 3. Setup Basis Data (Database)
 1. Buka control panel XAMPP dan pastikan modul **Apache** dan **MySQL** dalam status **Running**.
-2. Akses **phpMyAdmin** melalui browser di: `http://localhost/phpmyadmin`
+2. Akses **phpMyAdmin** melalui browser di: `https://localhost/phpmyadmin`
 3. Buat database baru dengan nama: `db_toko`
 4. Pilih database `db_toko`, klik tab **Import**.
 5. Pilih file `db_toko.sql` yang berada di root folder project, lalu klik **Import / Kirim**.
@@ -299,7 +299,7 @@ if (!$conn) {
 Buka web browser dan akses URL berikut:
 
 ```text
-http://localhost/phone-store-crud
+https://localhost/phone-store-crud
 ```
 
 ## 🔐 Fitur Keamanan Aplikasi
