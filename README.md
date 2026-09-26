@@ -3,6 +3,12 @@
 # 📱 Phone Store CRUD Management System
 ### *Sistem Informasi Manajemen Inventaris & Transaksi Retail Smartphone Terintegrasi Berbasis Web*
 
+<img src="docs/assets/img/IMG_20260722_185811.png" alt="Phone Store CRUD Dashboard Overview" width="880" style="border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+
+<p align="center">
+  <b>Solusi all-in-one untuk administrasi penjualan, pengadaan stok, pemantauan omset real-time, dan audit laporan keuangan toko ponsel.</b>
+</p>
+
 [![PHP Version](https://img.shields.io/badge/PHP-8.2%2B-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://www.php.net/)
 [![MySQL](https://img.shields.io/badge/MySQL-MariaDB%2010.4-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
 [![AdminLTE](https://img.shields.io/badge/AdminLTE-v3.0.0-3c8dbc?style=for-the-badge&logo=adminlte&logoColor=white)](https://adminlte.io/)
@@ -10,19 +16,11 @@
 [![Chart.js](https://img.shields.io/badge/Chart.js-Modern-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white)](https://www.chartjs.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 
-<br/>
-
-<img src="docs/assets/img/IMG_20260722_185811.png" alt="Phone Store CRUD Dashboard Overview" width="880" style="border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
-
-<p align="center">
-  <b>Solusi all-in-one untuk administrasi penjualan, pengadaan stok, pemantauan omset real-time, dan audit laporan keuangan toko ponsel.</b>
-</p>
-
 </div>
 
 ---
 
-## 📌 Tentang Project
+## 📌 Tentang Proyek
 
 **Phone Store CRUD** adalah aplikasi sistem informasi berbasis web yang dikembangkan untuk mendigitalisasi dan mengotomatisasi seluruh proses operasional retail smartphone. Sistem ini menggantikan pencatatan manual buku kas konvensional dengan platform terpusat yang aman, cepat, dan terstruktur.
 
