@@ -333,7 +333,7 @@ Aplikasi ini telah dilengkapi dengan serangkaian standar keamanan aplikasi web d
 
 Kontribusi selalu disambut dengan senang hati! Jika Anda memiliki ide perbaikan atau fitur baru:
 
-1. **Fork** repositori ini (`https://github.com/winanda150/crud/fork`).
+1. **Fork** repositori ini (`https://github.com/winanda150/phone-store-crud/fork`).
 2. Buat branch fitur baru (`git checkout -b feature/FiturKerenAnda`).
 3. Commit perubahan Anda (`git commit -m 'Menambahkan Fitur Keren'`).
 4. Push branch Anda (`git push origin feature/FiturKerenAnda`).
