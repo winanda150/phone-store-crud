@@ -258,7 +258,7 @@ Buka terminal / Git Bash di folder `htdocs` (jika menggunakan XAMPP) atau `www` 
 cd C:/xampp/htdocs
 
 # Clone repositori
-git clone https://github.com/winanda150/crud.git phone-store-crud
+git clone https://github.com/winanda150/phone-store-crud.git
 
 # Masuk ke direktori project
 cd phone-store-crud
@@ -350,5 +350,5 @@ Kontribusi selalu disambut dengan senang hati! Jika Anda memiliki ide perbaikan 
 ---
 
 <div align="center">
-  <small>Made with ❤️ by <b>I Wayan Winanda</b> • &copy; 2026 All Rights Reserved</small>
+  <small>Made with ❤️ by <b>WinandaDev</b> • &copy; 2026 All Rights Reserved</small>
 </div>
