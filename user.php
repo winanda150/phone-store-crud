@@ -1,7 +1,6 @@
 <?php
-  include 'session_check.php'; // Ganti blok session lama dengan ini
-
-  include 'koneksi.php';
+  include 'session_check.php';
+  include_once 'koneksi.php';
 
 $error = isset($_SESSION['error']) ? $_SESSION['error'] : '';
 $success = isset($_SESSION['success']) ? $_SESSION['success'] : '';
@@ -13,7 +12,14 @@ unset($_SESSION['success']);
 // Logika untuk menghapus data user
 if (isset($_GET['hapus_id'])) {
     $id = intval($_GET['hapus_id']);
-    // Sebaiknya gunakan prepared statement juga di sini untuk keamanan
+
+    // Cegah user menghapus akunnya sendiri yang sedang aktif
+    if ($id === intval($_SESSION['user_id'])) {
+        $_SESSION['error'] = 'Anda tidak dapat menghapus akun Anda sendiri yang sedang aktif digunakan.';
+        header('Location: user.php');
+        exit;
+    }
+
     $stmt = $conn->prepare("DELETE FROM user WHERE id = ?");
     $stmt->bind_param("i", $id);
     if ($stmt->execute()) {
@@ -21,6 +27,7 @@ if (isset($_GET['hapus_id'])) {
     } else {
         $_SESSION['error'] = 'Gagal menghapus user: ' . $stmt->error;
     }
+    $stmt->close();
     header('Location: user.php');
     exit;
 }
@@ -35,9 +42,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($nama_lengkap === '' || $username === '') {
             $_SESSION['error'] = 'Nama lengkap dan username harus diisi.';
         } else {
+            // Cek apakah username sudah digunakan user lain
+            $stmt_check = $conn->prepare("SELECT id FROM user WHERE username = ? AND id != ?");
+            $stmt_check->bind_param("si", $username, $id);
+            $stmt_check->execute();
+            $result_check = $stmt_check->get_result();
+            if ($result_check->num_rows > 0) {
+                $_SESSION['error'] = 'Username sudah digunakan oleh user lain. Silakan pilih username lain.';
+                $stmt_check->close();
+                header('Location: user.php');
+                exit;
+            }
+            $stmt_check->close();
+
             if (!empty($password)) {
                 // Jika password diisi, hash password baru
-                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                $hashed_password = password_hash($password, PASSWORD_BCRYPT);
                 $stmt = $conn->prepare("UPDATE user SET nama_lengkap=?, username=?, password=? WHERE id=?");
                 $stmt->bind_param("sssi", $nama_lengkap, $username, $hashed_password, $id);
             } else {
@@ -48,6 +68,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($stmt->execute()) {
                 $_SESSION['success'] = 'Data user berhasil diperbarui.';
+                // Jika mengedit akun sendiri, perbarui nama di session
+                if ($id === intval($_SESSION['user_id'])) {
+                    $_SESSION['nama_lengkap'] = $nama_lengkap;
+                }
             } else {
                 $_SESSION['error'] = 'Gagal mengubah data: ' . $stmt->error;
             }
@@ -59,6 +83,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($nama_lengkap === '' || $username === '' || $password === '') {
             $_SESSION['error'] = 'Semua field harus diisi.';
         } else {
+            // Cek apakah username sudah terdaftar
+            $stmt_check = $conn->prepare("SELECT id FROM user WHERE username = ?");
+            $stmt_check->bind_param("s", $username);
+            $stmt_check->execute();
+            $result_check = $stmt_check->get_result();
+            if ($result_check->num_rows > 0) {
+                $_SESSION['error'] = 'Username sudah terdaftar. Silakan gunakan username lain.';
+                $stmt_check->close();
+                header('Location: user.php');
+                exit;
+            }
+            $stmt_check->close();
+
             // Hash password sebelum disimpan
             $hashed_password = password_hash($password, PASSWORD_BCRYPT);
             $stmt = $conn->prepare("INSERT INTO user (nama_lengkap, username, password) VALUES (?, ?, ?)");
@@ -83,7 +120,7 @@ $query = "
            (CASE WHEN status > (NOW() - INTERVAL 5 MINUTE) THEN 1 ELSE 0 END) as is_online
     FROM user
 ";
-$data = mysqli_query($conn, $query);
+$data = $conn->query($query);
 
 ?>
 <!DOCTYPE html>
@@ -188,7 +225,7 @@ $data = mysqli_query($conn, $query);
           </li>
           <li class="nav-item has-treeview menu-open">
             <a href="#" class="nav-link active">
-              <i class="nav-icon fas fa-table"></i>
+              <i class="nav-icon fas fa-database"></i>
               <p>
                 Data Master
                 <i class="fas fa-angle-left right"></i>
@@ -197,7 +234,7 @@ $data = mysqli_query($conn, $query);
             <ul class="nav nav-treeview">
               <li class="nav-item">
                 <a href="user.php" class="nav-link active">
-                  <i class="far fa-circle nav-icon"></i>
+                  <i class="fas fa-users-cog nav-icon"></i>
                   <p>Data User</p>
                 </a>
               </li>
@@ -206,7 +243,7 @@ $data = mysqli_query($conn, $query);
           <li class="nav-header">TRANSAKSI</li>
           <li class="nav-item">
             <a href="penjualan.php" class="nav-link">
-              <i class="nav-icon far fa-calendar-alt"></i>
+              <i class="nav-icon fas fa-shopping-cart"></i>
               <p>
                 Penjualan
               </p>
@@ -214,7 +251,7 @@ $data = mysqli_query($conn, $query);
           </li>
           <li class="nav-item">
             <a href="pembelian.php" class="nav-link">
-              <i class="nav-icon far fa-image"></i>
+              <i class="nav-icon fas fa-truck-loading"></i>
               <p>
                 Pembelian
               </p>
@@ -224,7 +261,7 @@ $data = mysqli_query($conn, $query);
           <li class="nav-header">LAPORAN</li>
           <li class="nav-item">
             <a href="laporan_penjualan.php" class="nav-link">
-              <i class="nav-icon fas fa-file"></i>
+              <i class="nav-icon fas fa-file-invoice-dollar"></i>
               <p>Laporan Penjualan</p>
             </a>
           </li>
@@ -273,7 +310,7 @@ $data = mysqli_query($conn, $query);
 
                   <?php if ($error !== ''): ?>
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                      <?php echo $error; ?>
+                      <?= htmlspecialchars($error); ?>
                       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                       </button>
@@ -281,7 +318,7 @@ $data = mysqli_query($conn, $query);
                   <?php endif; ?>
                   <?php if ($success !== ''): ?>
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
-                      <?php echo $success; ?>
+                      <?= htmlspecialchars($success); ?>
                       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                       </button>
@@ -305,12 +342,12 @@ $data = mysqli_query($conn, $query);
                       <tbody>
 
                           <?php $no = 1; ?>
-                          <?php while($row = mysqli_fetch_assoc($data)): ?>
+                          <?php while($row = $data->fetch_assoc()): ?>
 
                           <tr>
                               <td><?= $no++; ?></td>
-                              <td><?= $row['nama_lengkap']; ?></td>
-                              <td><?= $row['username']; ?></td>
+                              <td><?= htmlspecialchars($row['nama_lengkap']); ?></td>
+                              <td><?= htmlspecialchars($row['username']); ?></td>
                               <td>********</td>
                               <td>
                                 <?php if ($row['is_online'] == 1): ?>
@@ -384,26 +421,17 @@ $data = mysqli_query($conn, $query);
 <script src="plugins/datatables-bs4/js/dataTables.bootstrap4.js"></script>
 <!-- AdminLTE App -->
 <script src="dist/js/adminlte.min.js"></script>
-<!-- AdminLTE for demo purposes -->
-<script src="dist/js/demo.js"></script>
 <!-- page script -->
 <script>
   $(function () {
     $("#example1").DataTable();
-    $('#example2').DataTable({
-      "paging": true,
-      "lengthChange": false,
-      "searching": false,
-      "ordering": true,
-      "info": true,
-      "autoWidth": false,
-    });
 
     $('.edit-user-button').on('click', function () {
       var button = $(this);
       $('#editUserId').val(button.data('id'));
       $('#editUserNama').val(button.data('nama'));
       $('#editUserUsername').val(button.data('username'));      
+      $('#editUserPassword').val('');
       $('#editUserPassword').attr('placeholder', 'Kosongkan jika tidak ingin diubah');
     });
 

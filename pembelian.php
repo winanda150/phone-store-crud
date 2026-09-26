@@ -1,12 +1,6 @@
 <?php
-  session_start();
-  // berasal dari login
-  if(!isset($_SESSION['login'])){
-    header("location: login.php");
-    exit();
-  }
-
-  include 'koneksi.php';
+  include 'session_check.php';
+  include_once 'koneksi.php';
 
   $error = '';
   $success = '';
@@ -27,35 +21,46 @@
       exit;
   }
 
-  // --- Logika Generate No Transaksi Otomatis ---
+  // --- Logika Generate No Transaksi Otomatis (Global Continuous Counter) ---
   $prefix = 'TRB-' . date('Ymd') . '-'; // TRB untuk Transaksi Beli
 
-  // Query untuk mendapatkan no_transaksi terakhir di database
-  $stmt_last_gen = $conn->prepare("SELECT no_transaksi FROM pembelian ORDER BY id DESC LIMIT 1");
+  // Query untuk mengambil nomor urut transaksi terbesar di seluruh database
+  $stmt_last_gen = $conn->prepare("SELECT MAX(CAST(SUBSTRING_INDEX(no_transaksi, '-', -1) AS UNSIGNED)) AS max_urut FROM pembelian");
   $stmt_last_gen->execute();
   $result_last_gen = $stmt_last_gen->get_result();
 
-  if ($result_last_gen->num_rows > 0) {
-      $row_last = $result_last_gen->fetch_assoc();
-      $last_transaksi = $row_last['no_transaksi'] ?? '';
-      $parts = explode('-', $last_transaksi);
-      $last_urut = intval(end($parts));
-      $urut_baru = ($last_urut > 0) ? ($last_urut + 1) : 1;
-  } else {
-      $urut_baru = 1;
+  $last_urut = 0;
+  if ($result_last_gen && $row_last = $result_last_gen->fetch_assoc()) {
+      $last_urut = intval($row_last['max_urut'] ?? 0);
   }
+
+  // Fallback jika query CAST menghasilkan 0 tapi tabel tidak kosong
+  if ($last_urut === 0) {
+      $res_all = $conn->query("SELECT no_transaksi FROM pembelian WHERE no_transaksi IS NOT NULL AND no_transaksi != ''");
+      if ($res_all) {
+          while ($r = $res_all->fetch_assoc()) {
+              $parts = explode('-', $r['no_transaksi'] ?? '');
+              $num = intval(end($parts));
+              if ($num > $last_urut) {
+                  $last_urut = $num;
+              }
+          }
+      }
+  }
+
+  $urut_baru = $last_urut + 1;
   $no_transaksi_otomatis = $prefix . str_pad($urut_baru, 4, '0', STR_PAD_LEFT);
   $stmt_last_gen->close();
   // --- Akhir Logika Generate No Transaksi ---
 
   // Logika untuk menambah data pembelian
   if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_pembelian'])) {
-      $no_transaksi = mysqli_real_escape_string($conn, trim($_POST['no_transaksi']));
-      $tanggal = mysqli_real_escape_string($conn, trim($_POST['tanggal']));
-      $supplier = mysqli_real_escape_string($conn, trim($_POST['supplier']));
-      $barang = mysqli_real_escape_string($conn, trim($_POST['barang']));
+      $no_transaksi = trim($_POST['no_transaksi']);
+      $tanggal = trim($_POST['tanggal']);
+      $supplier = trim($_POST['supplier']);
+      $barang = trim($_POST['barang']);
       $jumlah_barang = intval($_POST['jumlah_barang']);
-      $total = mysqli_real_escape_string($conn, trim($_POST['total']));
+      $total = trim($_POST['total']);
       // Hapus karakter non-numerik dari total
       $total_numeric = preg_replace('/[^0-9]/', '', $total);
 
@@ -63,7 +68,7 @@
           $error = 'Semua field harus diisi.';
       } else {
           $stmt = $conn->prepare("INSERT INTO pembelian (no_transaksi, tanggal, supplier, barang, jumlah_barang, total) VALUES (?, ?, ?, ?, ?, ?)");
-          $stmt->bind_param("ssssii", $no_transaksi, $tanggal, $supplier, $barang, $jumlah_barang, $total_numeric);
+          $stmt->bind_param("ssssid", $no_transaksi, $tanggal, $supplier, $barang, $jumlah_barang, $total_numeric);
           if ($stmt->execute()) {
               $_SESSION['success'] = 'Transaksi pembelian baru berhasil ditambahkan.';
           } else {
@@ -78,12 +83,12 @@
   // Logika untuk mengedit data pembelian
   if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_pembelian'])) {
       $id = intval($_POST['id']);
-      $no_transaksi = mysqli_real_escape_string($conn, trim($_POST['no_transaksi']));
-      $tanggal = mysqli_real_escape_string($conn, trim($_POST['tanggal']));
-      $supplier = mysqli_real_escape_string($conn, trim($_POST['supplier']));
-      $barang = mysqli_real_escape_string($conn, trim($_POST['barang']));
+      $no_transaksi = trim($_POST['no_transaksi']);
+      $tanggal = trim($_POST['tanggal']);
+      $supplier = trim($_POST['supplier']);
+      $barang = trim($_POST['barang']);
       $jumlah_barang = intval($_POST['jumlah_barang']);
-      $total = mysqli_real_escape_string($conn, trim($_POST['total']));
+      $total = trim($_POST['total']);
       // Hapus karakter non-numerik dari total
       $total_numeric = preg_replace('/[^0-9]/', '', $total);
 
@@ -91,7 +96,7 @@
           $error = 'Semua field harus diisi.';
       } else {
           $stmt = $conn->prepare("UPDATE pembelian SET no_transaksi=?, tanggal=?, supplier=?, barang=?, jumlah_barang=?, total=? WHERE id=?");
-          $stmt->bind_param("ssssiii", $no_transaksi, $tanggal, $supplier, $barang, $jumlah_barang, $total_numeric, $id);
+          $stmt->bind_param("ssssidi", $no_transaksi, $tanggal, $supplier, $barang, $jumlah_barang, $total_numeric, $id);
 
           if ($stmt->execute()) {
               $_SESSION['success'] = 'Transaksi berhasil diperbarui.';
@@ -104,7 +109,9 @@
       }
   }
 
-  $data_pembelian = mysqli_query($conn, "SELECT * FROM pembelian ORDER BY tanggal DESC");
+  $stmt_data = $conn->prepare("SELECT * FROM pembelian ORDER BY tanggal DESC, id DESC");
+  $stmt_data->execute();
+  $data_pembelian = $stmt_data->get_result();
 ?>
 
 <!DOCTYPE html>
@@ -209,7 +216,7 @@
           </li>
           <li class="nav-item has-treeview">
             <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-table"></i>
+              <i class="nav-icon fas fa-database"></i>
               <p>
                 Data Master
                 <i class="fas fa-angle-left right"></i>
@@ -218,7 +225,7 @@
             <ul class="nav nav-treeview">
               <li class="nav-item">
                 <a href="user.php" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
+                  <i class="fas fa-users-cog nav-icon"></i>
                   <p>Data User</p>
                 </a>
               </li>
@@ -227,7 +234,7 @@
           <li class="nav-header">TRANSAKSI</li>
           <li class="nav-item">
             <a href="penjualan.php" class="nav-link">
-              <i class="nav-icon far fa-calendar-alt"></i>
+              <i class="nav-icon fas fa-shopping-cart"></i>
               <p>
                 Penjualan
               </p>
@@ -235,7 +242,7 @@
           </li>
           <li class="nav-item">
             <a href="pembelian.php" class="nav-link active">
-              <i class="nav-icon far fa-image"></i>
+              <i class="nav-icon fas fa-truck-loading"></i>
               <p>
                 Pembelian
               </p>
@@ -245,7 +252,7 @@
           <li class="nav-header">LAPORAN</li>
           <li class="nav-item">
             <a href="laporan_penjualan.php" class="nav-link">
-              <i class="nav-icon fas fa-file"></i>
+              <i class="nav-icon fas fa-file-invoice-dollar"></i>
               <p>Laporan Penjualan</p>
             </a>
           </li>
@@ -292,7 +299,7 @@
 
                 <?php if ($error !== ''): ?>
                   <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <?php echo $error; ?>
+                    <?= htmlspecialchars($error); ?>
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
@@ -300,7 +307,7 @@
                 <?php endif; ?>
                 <?php if ($success !== ''): ?>
                   <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <?php echo $success; ?>
+                    <?= htmlspecialchars($success); ?>
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
@@ -323,7 +330,7 @@
                     <tbody>
                         <?php
                           $no = 1;
-                          while($row = mysqli_fetch_assoc($data_pembelian)):
+                          while($row = $data_pembelian->fetch_assoc()):
                         ?>
                         <tr>
                             <td><?= $no++; ?></td>
@@ -529,8 +536,6 @@
 <script src="plugins/datatables-bs4/js/dataTables.bootstrap4.js"></script>
 <!-- AdminLTE App -->
 <script src="dist/js/adminlte.min.js"></script>
-<!-- AdminLTE for demo purposes -->
-<script src="dist/js/demo.js"></script>
 <!-- page script -->
 <script>
   $(function () {
@@ -547,7 +552,7 @@
       $('#editBarang').val(button.data('barang'));
       $('#editJumlahBarang').val(button.data('jumlah_barang'));
       var totalValue = button.data('total').toString();
-      $('#editTotal').val(parseInt(totalValue));
+      $('#editTotal').val(formatRupiah(parseInt(totalValue).toString()));
     });
 
     // Script untuk mengatur link hapus
@@ -572,8 +577,8 @@
         return rupiah;
     }
 
-    // Terapkan format saat mengetik di modal tambah dan edit
-    $('#addTotal, #editTotal').on('keyup', function() {
+    // Terapkan format saat mengetik atau paste di modal tambah dan edit
+    $('#addTotal, #editTotal').on('input', function() {
         $(this).val(formatRupiah($(this).val()));
     });
   });

@@ -1,12 +1,6 @@
 <?php
-  session_start();
-  // berasal dari login
-  if(!isset($_SESSION['login'])){
-    header("location: login.php");
-    exit();
-  }
-
-  include 'koneksi.php';
+  include 'session_check.php';
+  include_once 'koneksi.php';
 
   // Hitung jumlah user
   $stmt_users = $conn->prepare("SELECT COUNT(id) as total_users FROM user");
@@ -173,7 +167,7 @@
           </li>
           <li class="nav-item has-treeview">
             <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-table"></i>
+              <i class="nav-icon fas fa-database"></i>
               <p>
                 Data Master
                 <i class="fas fa-angle-left right"></i>
@@ -182,7 +176,7 @@
             <ul class="nav nav-treeview">
               <li class="nav-item">
                 <a href="user.php" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
+                  <i class="fas fa-users-cog nav-icon"></i>
                   <p>Data User</p>
                 </a>
               </li>
@@ -191,7 +185,7 @@
           <li class="nav-header">TRANSAKSI</li>
           <li class="nav-item">
             <a href="penjualan.php" class="nav-link">
-              <i class="nav-icon far fa-calendar-alt"></i>
+              <i class="nav-icon fas fa-shopping-cart"></i>
               <p>
                 Penjualan
               </p>
@@ -199,7 +193,7 @@
           </li>
           <li class="nav-item">
             <a href="pembelian.php" class="nav-link">
-              <i class="nav-icon far fa-image"></i>
+              <i class="nav-icon fas fa-truck-loading"></i>
               <p>
                 Pembelian
               </p>
@@ -209,7 +203,7 @@
           <li class="nav-header">LAPORAN</li>
           <li class="nav-item">
             <a href="laporan_penjualan.php" class="nav-link">
-              <i class="nav-icon fas fa-file"></i>
+              <i class="nav-icon fas fa-file-invoice-dollar"></i>
               <p>Laporan Penjualan</p>
             </a>
           </li>
@@ -466,10 +460,10 @@
     //-------------
     var profitChartCanvas = $('#profitChart').get(0).getContext('2d')
     var profitChartData = {
-      labels: [ 'Biaya Pembelian', 'Keuntungan' ],
+      labels: [ 'Biaya Pembelian', <?= $keuntungan >= 0 ? "'Keuntungan Bersih'" : "'Defisit / Kerugian'" ?> ],
       datasets: [ {
-          data: [<?= $total_biaya_pembelian ?>, <?= $keuntungan ?>],
-          backgroundColor: ['#dc3545', '#6f42c1'], // bg-danger, bg-purple
+          data: [<?= max(0, (float)$total_biaya_pembelian) ?>, <?= max(0, abs((float)$keuntungan)) ?>],
+          backgroundColor: ['#dc3545', <?= $keuntungan >= 0 ? "'#6f42c1'" : "'#ffc107'" ?>],
       }]
     }
     var profitChart = new Chart(profitChartCanvas, {

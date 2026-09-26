@@ -11,7 +11,6 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
 
-
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
@@ -34,7 +33,7 @@ CREATE TABLE `pembelian` (
   `supplier` varchar(100) NOT NULL,
   `barang` varchar(100) NOT NULL,
   `jumlah_barang` int(11) NOT NULL,
-  `total` int(11) NOT NULL
+  `total` decimal(15,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -42,7 +41,7 @@ CREATE TABLE `pembelian` (
 --
 
 INSERT INTO `pembelian` (`id`, `no_transaksi`, `tanggal`, `supplier`, `barang`, `jumlah_barang`, `total`) VALUES
-(1, 'TRB-20260704-0001', '2026-07-04', 'PT Erajaya Swasembada', 'Samsung Galaxy S24 Ultra', 5, 69995000);
+(1, 'TRB-20260704-0001', '2026-07-04', 'PT Erajaya Swasembada', 'Samsung Galaxy S24 Ultra', 5, 69995000.00);
 
 -- --------------------------------------------------------
 
@@ -108,7 +107,8 @@ ALTER TABLE `penjualan`
 -- Indeks untuk tabel `user`
 --
 ALTER TABLE `user`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `username` (`username`);
 
 --
 -- AUTO_INCREMENT untuk tabel yang dibuang

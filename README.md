@@ -41,8 +41,8 @@ Aplikasi ini mencakup siklus lengkap bisnis retail mulai dari **manajemen penggu
     <td width="50%">
       <h3>💰 2. Manajemen Penjualan (Sales POS)</h3>
       <ul>
-        <li><b>Auto Invoice Generator</b>: Pembuatan kode transaksi otomatis dengan format unik berbasis tanggal (e.g. <code>TRJ-YYYYMMDD-0001</code>).</li>
-        <li><b>Currency Auto-Masking</b>: Input nominal dengan pemisah ribuan Rupiah otomatis secara interaktif.</li>
+        <li><b>Continuous Auto Invoice Generator</b>: Pembuatan nomor transaksi unik berurutan secara global berbasis tanggal (e.g. <code>TRJ-YYYYMMDD-XXXX</code>) yang mencegah duplikasi nomor invoice.</li>
+        <li><b>Currency Auto-Masking</b>: Input nominal dengan pemisah ribuan Rupiah otomatis secara interaktif saat mengetik maupun paste.</li>
         <li><b>CRUD Interaktif</b>: Tambah, ubah data, dan hapus transaksi dengan modal konfirmasi.</li>
       </ul>
     </td>
@@ -51,9 +51,9 @@ Aplikasi ini mencakup siklus lengkap bisnis retail mulai dari **manajemen penggu
     <td width="50%">
       <h3>🛒 3. Manajemen Pembelian (Procurement)</h3>
       <ul>
-        <li><b>Kode Transaksi Otomatis</b>: Penomoran terstandarisasi untuk transaksi masuk (e.g. <code>TRB-YYYYMMDD-0001</code>).</li>
-        <li><b>Tracking Supplier & Stok</b>: Pencatatan identitas supplier, spesifikasi unit ponsel, kuantitas, dan total biaya modal.</li>
-        <li><b>Pencarian & Filtering Cepat</b>: Didukung oleh jQuery DataTables dengan pagination instan.</li>
+        <li><b>Kode Transaksi Masuk Otomatis</b>: Penomoran terstandarisasi untuk transaksi pembelian unit stok (e.g. <code>TRB-YYYYMMDD-XXXX</code>) dengan counter berurutan otomatis.</li>
+        <li><b>Tracking Supplier & Stok</b>: Pencatatan identitas distributor/supplier, tipe unit ponsel, kuantitas, dan total biaya modal.</li>
+        <li><b>Pencarian & Filtering Cepat</b>: Didukung oleh jQuery DataTables dengan pagination dan live search instan.</li>
       </ul>
     </td>
     <td width="50%">
@@ -93,7 +93,7 @@ Sistem dibangun menggunakan paradigma **Monolithic MVC-lite** dengan PHP Native 
 
 ```mermaid
 graph TD
-    Client([💻 User Browser]) -->|HTTPS Request| Router{index.php / Session Guard}
+    Client([💻 User Browser]) -->|HTTP / HTTPS Request| Router{index.php / Session Guard}
     Router -->|Belum Login| Login[login.php]
     Router -->|Terautentikasi| Dashboard[dashboard.php]
     
@@ -145,7 +145,7 @@ erDiagram
         varchar supplier
         varchar barang
         int jumlah_barang
-        int total
+        decimal total
     }
 ```
 
@@ -186,7 +186,7 @@ Menyimpan log pengadaan unit stok ponsel dari supplier.
 | `supplier` | `VARCHAR(100)` | Nama distributor / supplier vendor |
 | `barang` | `VARCHAR(100)` | Tipe / seri unit barang yang dibeli |
 | `jumlah_barang` | `INT(11)` | Jumlah unit barang masuk |
-| `total` | `INT(11)` | Total biaya pengeluaran modal |
+| `total` | `DECIMAL(15,2)` | Total biaya pengeluaran modal |
 
 ---
 
@@ -220,6 +220,7 @@ phone-store-crud/
 │   ├── datatables/            # Core library DataTables
 │   ├── datatables-bs4/        # Integrasi styling DataTables untuk Bootstrap 4
 │   ├── fontawesome-free/      # FontAwesome icons set
+│   ├── icheck-bootstrap/      # Styling input form login
 │   └── jquery/                # jQuery framework core
 ├── dashboard.php              # Halaman beranda analitik & visualisasi grafik
 ├── db_toko.sql                # Skema database DDL & data seed awal
@@ -232,6 +233,8 @@ phone-store-crud/
 ├── penjualan.php              # Modul CRUD transaksi penjualan unit
 ├── session_check.php          # Middleware proteksi halaman & status tracker
 ├── user.php                   # Modul CRUD manajemen data akun administrator
+├── .gitattributes             # Konfigurasi normalisasi line endings & linguist GitHub
+├── .gitignore                 # Aturan pengabaian file sampah, cache, & OS temporary
 └── README.md                  # Dokumentasi resmi repositori
 ```
 
@@ -268,7 +271,7 @@ cd phone-store-crud
 
 ### 3. Setup Basis Data (Database)
 1. Buka control panel XAMPP dan pastikan modul **Apache** dan **MySQL** dalam status **Running**.
-2. Akses **phpMyAdmin** melalui browser di: `https://localhost/phpmyadmin`
+2. Akses **phpMyAdmin** melalui browser di: `http://localhost/phpmyadmin`
 3. Buat database baru dengan nama: `db_toko`
 4. Pilih database `db_toko`, klik tab **Import**.
 5. Pilih file `db_toko.sql` yang berada di root folder project, lalu klik **Import / Kirim**.
@@ -299,7 +302,7 @@ if (!$conn) {
 Buka web browser dan akses URL berikut:
 
 ```text
-https://localhost/phone-store-crud
+http://localhost/phone-store-crud
 ```
 
 ## 🔐 Fitur Keamanan Aplikasi

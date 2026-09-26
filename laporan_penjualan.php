@@ -1,12 +1,6 @@
 <?php
-  session_start();
-  // berasal dari login
-  if(!isset($_SESSION['login'])){
-    header("location: login.php");
-    exit();
-  }
-
-  include 'koneksi.php';
+  include 'session_check.php';
+  include_once 'koneksi.php';
 
   // Ambil tanggal transaksi pertama dan terakhir sebagai default
   $stmt_dates = $conn->prepare("SELECT MIN(tanggal) as min_date, MAX(tanggal) as max_date FROM penjualan");
@@ -21,6 +15,11 @@
   if(isset($_GET['start_date']) && isset($_GET['end_date']) && !empty($_GET['start_date']) && !empty($_GET['end_date'])){
     $start_date = $_GET['start_date'];
     $end_date = $_GET['end_date'];
+    if ($start_date > $end_date) {
+      $temp = $start_date;
+      $start_date = $end_date;
+      $end_date = $temp;
+    }
   }
 
   $query_laporan = "SELECT * FROM penjualan WHERE tanggal BETWEEN ? AND ? ORDER BY tanggal ASC";
@@ -105,7 +104,7 @@
           </li>
           <li class="nav-item has-treeview">
             <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-table"></i>
+              <i class="nav-icon fas fa-database"></i>
               <p>
                 Data Master
                 <i class="fas fa-angle-left right"></i>
@@ -114,7 +113,7 @@
             <ul class="nav nav-treeview">
               <li class="nav-item">
                 <a href="user.php" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
+                  <i class="fas fa-users-cog nav-icon"></i>
                   <p>Data User</p>
                 </a>
               </li>
@@ -123,20 +122,20 @@
           <li class="nav-header">TRANSAKSI</li>
           <li class="nav-item">
             <a href="penjualan.php" class="nav-link">
-              <i class="nav-icon far fa-calendar-alt"></i>
+              <i class="nav-icon fas fa-shopping-cart"></i>
               <p>Penjualan</p>
             </a>
           </li>
           <li class="nav-item">
             <a href="pembelian.php" class="nav-link">
-              <i class="nav-icon far fa-image"></i>
+              <i class="nav-icon fas fa-truck-loading"></i>
               <p>Pembelian</p>
             </a>
           </li>
           <li class="nav-header">LAPORAN</li>
           <li class="nav-item">
             <a href="laporan_penjualan.php" class="nav-link active">
-              <i class="nav-icon fas fa-file"></i>
+              <i class="nav-icon fas fa-file-invoice-dollar"></i>
               <p>Laporan Penjualan</p>
             </a>
           </li>
@@ -208,6 +207,13 @@
                   </tr>
                 </thead>
                 <tbody>
+                  <?php if ($result_laporan->num_rows === 0): ?>
+                  <tr>
+                    <td colspan="7" class="text-center text-muted py-4">
+                      <i class="fas fa-info-circle mr-1"></i> Tidak ada transaksi penjualan pada periode tanggal yang dipilih.
+                    </td>
+                  </tr>
+                  <?php else: ?>
                   <?php
                     $no = 1;
                     while($row = $result_laporan->fetch_assoc()):
@@ -223,6 +229,7 @@
                     <td class="text-right">Rp <?= htmlspecialchars(number_format($row['total'], 0, ',', '.')); ?></td>
                   </tr>
                   <?php endwhile; ?>
+                  <?php endif; ?>
                 </tbody>
                 <tfoot>
                   <tr>

@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Jika tidak ada sesi login, arahkan ke halaman login.
 if (!isset($_SESSION['login']) || !isset($_SESSION['user_id'])) {

@@ -1,5 +1,9 @@
 <?php
   session_start();
+  if (isset($_SESSION['login']) && $_SESSION['login'] === true) {
+      header("Location: dashboard.php");
+      exit();
+  }
   $error="";
   
   require_once "koneksi.php";
@@ -14,7 +18,7 @@
     $stmt->execute();
     $result = $stmt->get_result();
 
-    if($result->num_rows === 1) {
+    if ($result->num_rows === 1) {
       $user = $result->fetch_assoc();
 
       // Verifikasi password yang diinput dengan hash di database
@@ -22,15 +26,17 @@
         $_SESSION['login'] = true;
         $_SESSION['nama_lengkap'] = $user['nama_lengkap'];
         $_SESSION['user_id'] = $user['id']; // Tambahkan user_id ke session
-        header ("Location: dashboard.php"); //untuk masuk ke dashboard
+        $stmt->close();
+        header("Location: dashboard.php");
         exit();
       } else {
-        $error="Username atau password salah.";
+        $error = "Username atau password salah.";
       }
     } else {
-        $error="Username atau password salah.";
-      }
+      $error = "Username atau password salah.";
     }
+    $stmt->close();
+  }
 ?>
 
 <!DOCTYPE html>
@@ -56,7 +62,7 @@
 <body class="hold-transition login-page">
 <div class="login-box">
   <div class="login-logo">
-    <a href="index.html"><b>Admin</b>LTE</a>
+    <a href="login.php"><b>Phone Store</b> CRUD</a>
   </div>
   <!-- /.login-logo -->
   <div class="card">
@@ -75,15 +81,15 @@
 
       <form action="" method="post">
         <div class="input-group mb-3">
-          <input type="text" name="username" class="form-control" placeholder="Username">
+          <input type="text" name="username" class="form-control" placeholder="Username" required>
           <div class="input-group-append">
             <div class="input-group-text">
-              <span class="fas fa-envelope"></span>
+              <span class="fas fa-user"></span>
             </div>
           </div>
         </div>
         <div class="input-group mb-3">
-          <input type="password" name="password" class="form-control" placeholder="Password">
+          <input type="password" name="password" class="form-control" placeholder="Password" required>
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-lock"></span>
