@@ -1,0 +1,102 @@
+# --- Environment & Local Configuration ---
+.env
+.env.local
+.env.*.local
+*.env
+koneksi.local.php
+config.local.php
+
+# --- Operating System Files ---
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# --- IDE & Text Editors ---
+# Visual Studio Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# JetBrains (PhpStorm, WebStorm, IntelliJ IDEA, dll.)
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Sublime Text / Eclipse / NetBeans
+*.sublime-project
+*.sublime-workspace
+.project
+.buildpath
+.settings/
+nbproject/
+nbbuild/
+dist/nbproject/
+
+# --- Logs, Caches & Temporary Files ---
+*.log
+error_log
+logs/
+tmp/
+temp/
+cache/
+*.tmp
+*.bak
+*.swp
+*~
+
+# --- Dependency Managers & Package Tools ---
+# Composer
+/vendor/
+composer.phar
+
+# Node / NPM / Yarn / PNPM
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.npm/
+
+# Jekyll / Ruby Docs (AdminLTE documentation bundle & cache)
+docs/_site/
+docs/.sass-cache/
+docs/.jekyll-cache/
+docs/.jekyll-metadata
+.bundle/
+
+# --- Backup Files & User Uploads ---
+# Arsip / Kompresi
+*.zip
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+
+# SQL Backups (Hanya ignore temporary/backup dumps, db_toko.sql tetap di-track)
+*.sql.bak
+*.backup.sql
+dump.sql
+export_*.sql

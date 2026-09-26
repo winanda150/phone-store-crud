@@ -1,3 +1,43 @@
-* text=auto
-*.php linguist-language=PHP
+# 1. Normalisasi Line Endings (CRLF / LF)
+* text=auto eol=lf
+
+# File teks utama aplikasi (memastikan format LF konsisten antar OS)
+*.php text eol=lf diff=php
+*.sql text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.xml text eol=lf
+
+# 2. File Biner (Mencegah Git merusak data biner/gambar/font)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.svg text
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.otf binary
+*.pdf binary
+*.zip binary
+
+# 3. GitHub Linguist Overrides (Statistik Bahasa Repositori di GitHub)
+# Mengabaikan aset library & template bawaan AdminLTE agar statistik
+# bahasa GitHub secara akurat menampilkan PHP sebagai bahasa utama.
+plugins/** linguist-vendored
+dist/** linguist-vendored
+build/** linguist-vendored
+pages/** linguist-vendored
+docs/** linguist-documentation
+
+# Memastikan file kode inti terdeteksi
 *.php linguist-detectable=true
+db_toko.sql linguist-detectable=true

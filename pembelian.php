@@ -27,20 +27,20 @@
       exit;
   }
 
-  $tanggal_hari_ini = date('Y-m-d');
+  // --- Logika Generate No Transaksi Otomatis ---
   $prefix = 'TRB-' . date('Ymd') . '-'; // TRB untuk Transaksi Beli
 
-  // Query untuk mendapatkan no_transaksi terakhir hari ini
-  $stmt_last_gen = $conn->prepare("SELECT no_transaksi FROM pembelian WHERE no_transaksi LIKE ? ORDER BY id DESC LIMIT 1");
-  $like_prefix = $prefix . '%';
-  $stmt_last_gen->bind_param("s", $like_prefix);
+  // Query untuk mendapatkan no_transaksi terakhir di database
+  $stmt_last_gen = $conn->prepare("SELECT no_transaksi FROM pembelian ORDER BY id DESC LIMIT 1");
   $stmt_last_gen->execute();
   $result_last_gen = $stmt_last_gen->get_result();
 
   if ($result_last_gen->num_rows > 0) {
-      $last_transaksi = $result_last_gen->fetch_assoc()['no_transaksi'];
-      $last_urut = intval(substr($last_transaksi, strlen($prefix)));
-      $urut_baru = $last_urut + 1;
+      $row_last = $result_last_gen->fetch_assoc();
+      $last_transaksi = $row_last['no_transaksi'] ?? '';
+      $parts = explode('-', $last_transaksi);
+      $last_urut = intval(end($parts));
+      $urut_baru = ($last_urut > 0) ? ($last_urut + 1) : 1;
   } else {
       $urut_baru = 1;
   }
