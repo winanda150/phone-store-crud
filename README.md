@@ -18,8 +18,6 @@
 
 </div>
 
----
-
 ## 📌 Tentang Proyek
 
 **Phone Store CRUD** adalah aplikasi sistem informasi berbasis web yang dikembangkan untuk mendigitalisasi dan mengotomatisasi seluruh proses operasional retail smartphone. Sistem ini menggantikan pencatatan manual buku kas konvensional dengan platform terpusat yang aman, cepat, dan terstruktur.
