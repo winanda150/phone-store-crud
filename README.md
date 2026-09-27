@@ -289,11 +289,16 @@ $user = "root";       // Username database Anda (default: root)
 $pass = "";           // Password database Anda (default kosong di XAMPP)
 $db   = "db_toko";     // Nama database yang diimport
 
+mysqli_report(MYSQLI_REPORT_OFF);
+
 $conn = mysqli_connect($host, $user, $pass, $db);
 
 if (!$conn) {
-    die("Koneksi gagal: " . mysqli_connect_error());
+    die("Koneksi ke database gagal: " . mysqli_connect_error());
 }
+
+mysqli_set_charset($conn, "utf8mb4");
+date_default_timezone_set('Asia/Jakarta');
 ?>
 ```
 

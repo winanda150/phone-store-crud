@@ -10,9 +10,8 @@ mysqli_report(MYSQLI_REPORT_OFF);
 $conn = @mysqli_connect($host, $user, $pass, $db);
 
 if (!$conn) {
-    die("Koneksi ke database gagal: Pastikan modul MySQL pada XAMPP/Laragon sudah aktif dan database 'db_toko' sudah di-import. Error: " . mysqli_connect_error());
+    die("Koneksi ke database gagal: " . mysqli_connect_error());
 }
 
 mysqli_set_charset($conn, "utf8mb4");
 date_default_timezone_set('Asia/Jakarta');
-?>
