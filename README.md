@@ -14,7 +14,6 @@
 [![AdminLTE](https://img.shields.io/badge/AdminLTE-v3.0.0-3c8dbc?style=for-the-badge&logo=adminlte&logoColor=white)](https://adminlte.io/)
 [![Bootstrap](https://img.shields.io/badge/Bootstrap-4.6-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white)](https://getbootstrap.com/)
 [![Chart.js](https://img.shields.io/badge/Chart.js-Modern-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white)](https://www.chartjs.org/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 
 </div>
 
@@ -298,12 +297,27 @@ if (!$conn) {
 
 ---
 
-### 5. Akses Aplikasi
+### 5. Akses Aplikasi & Kredensial Login
 Buka web browser dan akses URL berikut:
 
 ```text
 http://localhost/phone-store-crud
 ```
+
+#### 🔑 Kredensial Akun Default
+Setelah mengimpor database `db_toko.sql`, gunakan kredensial login bawaan berikut untuk masuk ke dashboard:
+
+| Field | Nilai / Kredensial | Keterangan |
+| :--- | :--- | :--- |
+| **URL Login** | `http://localhost/phone-store-crud/login.php` | Halaman Otentikasi Sistem |
+| **Username** | `winanda` | Akun Administrator |
+| **Password** | `2501010182` | Password Administrator |
+
+> [!TIP]
+> **Manajemen Pengguna:**
+> Setelah berhasil login, Anda dapat menambahkan pengguna baru, mengubah username, atau memperbarui kata sandi melalui menu **Data User** (`user.php`).
+
+---
 
 ## 🔐 Fitur Keamanan Aplikasi
 
