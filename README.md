@@ -10,11 +10,11 @@
 </p>
 
 <p align="center">
-  [![PHP Version](https://img.shields.io/badge/PHP-8.2%2B-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://www.php.net/)
-  [![MySQL](https://img.shields.io/badge/MySQL-MariaDB%2010.4-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
-  [![AdminLTE](https://img.shields.io/badge/AdminLTE-v3.0.0-3c8dbc?style=for-the-badge&logo=adminlte&logoColor=white)](https://adminlte.io/)
-  [![Bootstrap](https://img.shields.io/badge/Bootstrap-4.6-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white)](https://getbootstrap.com/)
-  [![Chart.js](https://img.shields.io/badge/Chart.js-Modern-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white)](https://www.chartjs.org/)
+  <a href="https://www.php.net/"><img src="https://img.shields.io/badge/PHP-8.2%2B-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP Version"></a>
+  <a href="https://www.mysql.com/"><img src="https://img.shields.io/badge/MySQL-MariaDB%2010.4-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL"></a>
+  <a href="https://adminlte.io/"><img src="https://img.shields.io/badge/AdminLTE-v3.0.0-3c8dbc?style=for-the-badge&logo=adminlte&logoColor=white" alt="AdminLTE"></a>
+  <a href="https://getbootstrap.com/"><img src="https://img.shields.io/badge/Bootstrap-4.6-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white" alt="Bootstrap"></a>
+  <a href="https://www.chartjs.org/"><img src="https://img.shields.io/badge/Chart.js-Modern-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white" alt="Chart.js"></a>
 </p>
 
 </div>
